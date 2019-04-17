@@ -99,7 +99,7 @@ int main(){
 			
 			//If you add the top with what's available...
 			deque<vector<int>> inter_mat = currentProcesses; //Temporary storage
-			transform(currentProcesses.front().begin(), currentProcesses.front().end(), availableResources.begin(), inter_mat.front().begin(), plus<int>());
+			transform(currentProcesses.front().begin(), currentProcesses.front().end()-1, availableResources.begin(), inter_mat.front().begin(), plus<int>());
 			
 			//...what is the result?
 			cout << "--------" << endl;
@@ -112,12 +112,20 @@ int main(){
 				cout << elem << " ";
 			} cout << "Requirement" << " ";
 			
+			//Check if each individual element has the required resources
+			int count = 0;
+			for(int j=0;j<numResourceTypes;j++){
+				if(inter_mat.front().at(j) >= goalProcesses.front().at(j)){
+					count++;
+				}
+			}
+			
 			//If that result meet the processes' requirements 
-			if(inter_mat.front() >= goalProcesses.front()){
+			if(count == numResourceTypes){
 				cout << "(o)\n\n" << endl;
 				
 				//Get those resources and run
-				transform(currentProcesses.front().begin(), currentProcesses.front().end(), availableResources.begin(), currentProcesses.front().begin(), plus<int>()); 
+				transform(currentProcesses.front().begin(), currentProcesses.front().end()-1, availableResources.begin(), currentProcesses.front().begin(), plus<int>()); 
 				transform(availableResources.begin(), availableResources.end(), availableResources.begin(), availableResources.begin(), minus<int>()); // = 0 available resources?
 				
 				//Give the resources back and terminate
