@@ -5,7 +5,7 @@
 #include <functional>
 using namespace std;
 
-void printEverything(vector<int> availableResources, deque<vector<int>> currentProcesses, deque<vector<int>> goalProcesses){
+void printEverything(vector<int> availableResources, deque<vector<int>> currentProcesses, deque<vector<int>> resourcesNeeded, deque<vector<int>> goalProcesses){
 	string output = "\n-----------------\n";
 	
 	//Available Resources
@@ -22,6 +22,14 @@ void printEverything(vector<int> availableResources, deque<vector<int>> currentP
 		} output += "\n";
 	}output += "\n";
 	
+	//Resources still needed
+	output+= "Resources still needed:\n";
+	for(vector<int> v :  resourcesNeeded) {
+		for(int elem : v){
+			output += to_string(elem) + " ";
+		} output += "\n";
+	}output += "\n";
+	
 	//Final Processes
 	output+= "Process Goals:\n";
 	for(vector<int> v : goalProcesses) {
@@ -33,13 +41,16 @@ void printEverything(vector<int> availableResources, deque<vector<int>> currentP
 	cout << output << "-----------------\n" << endl;
 }
 
+
 int main(){
 	int numCases, num;
+	string answer = "";
 	cin >> numCases;
 	
 	//For each test case
 	for(int i=0; i<numCases; i++){
-		string answer = "";
+		answer += "Test Case #" + to_string(i+1) + ":\n";
+		answer += "---------------\nProcess Request Order:\n";
 		
 		//*INPUT*//
 		//Get inputs for the number of processes and number of resources types
@@ -52,8 +63,8 @@ int main(){
 		//Make a "matrix" for the current processes
 		deque<vector<int>> currentProcesses;
 		
-		//Make "matrix" to compare
-		deque<vector<int>> goalProcesses;
+		//Make a "matrix" for the resources needed per process
+		deque<vector<int>> resourcesNeeded;
 		
 		//Input initial number of each available resources
 		for(int j=0; j<numResourceTypes;j++) cin >> availableResources[j];  
@@ -69,7 +80,7 @@ int main(){
 			currentProcesses.push_back(inter_mat);
 		}
 		
-		//Input number of each resource that each process is supposed to hold to run
+		//Input initial number of each resource that each process still needs to run
 		for(int j=0;j<numProcesses; j++){
 			vector<int> inter_mat;  //Intermediate matrix to help insert(push) contents of whole row at a time
 			for (int k=0; k<numResourceTypes; k++) {
@@ -77,11 +88,27 @@ int main(){
 				inter_mat.push_back(num);
 			} 
 			inter_mat.push_back(j+1); //index number
-			goalProcesses.push_back(inter_mat);
+			resourcesNeeded.push_back(inter_mat);
+		}
+
+		//Make "matrix" to compare
+		deque<vector<int>> goalProcesses = currentProcesses;
+		
+		//Calculate the required resources for each processes
+		for(vector<int> v : currentProcesses){
+			transform(goalProcesses.front().begin(), goalProcesses.front().end()-1, goalProcesses.front().begin(), goalProcesses.front().begin(), minus<int>()); //clear contents
+			transform(currentProcesses.front().begin(), currentProcesses.front().end()-1, resourcesNeeded.front().begin(), goalProcesses.front().begin(), plus<int>());
+			
+			currentProcesses.push_back(currentProcesses.front()); //Push to the bottom
+			currentProcesses.pop_front(); //Delete the top
+			resourcesNeeded.push_back(resourcesNeeded.front()); //Push to the bottom
+			resourcesNeeded.pop_front(); //Delete the top
+			goalProcesses.push_back(goalProcesses.front());
+			goalProcesses.pop_front();
 		}
 		
 		//*CHECK PROCESSES*//
-		printEverything(availableResources, currentProcesses, goalProcesses);
+		printEverything(availableResources, currentProcesses, resourcesNeeded, goalProcesses);
 		
 		//*GENERATE OUTPUT*//
 		//While there are still processes to be run
@@ -136,6 +163,7 @@ int main(){
 				
 				//Remove it from the top
 				currentProcesses.pop_front();
+				resourcesNeeded.pop_front();
 				goalProcesses.pop_front();
 			}
 			else{
@@ -144,11 +172,14 @@ int main(){
 				//Check the next process
 				currentProcesses.push_back(currentProcesses.front()); //Push to the bottom
 				currentProcesses.pop_front(); //Delete the top
+				resourcesNeeded.push_back(resourcesNeeded.front()); //Push to the bottom
+				resourcesNeeded.pop_front(); //Delete the top
 				goalProcesses.push_back(goalProcesses.front()); //Push to the bottom
 				goalProcesses.pop_front(); //Delete the top
 			}
 		}
-		cout << "---------------\nProcess Request Order:\n" << answer << endl;
-	}
+		answer += "\n\n";
+	} 
+	cout << answer << endl;
 	return 0;
 }
