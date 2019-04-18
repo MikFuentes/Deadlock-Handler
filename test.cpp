@@ -41,7 +41,6 @@ void printEverything(vector<int> availableResources, deque<vector<int>> currentP
 	cout << output << "-----------------\n" << endl;
 }
 
-
 int main(){
 	int numCases, num;
 	string answer = "";
@@ -49,8 +48,10 @@ int main(){
 	
 	//For each test case
 	for(int i=0; i<numCases; i++){
-		answer += "Test Case #" + to_string(i+1) + ":\n";
-		answer += "---------------\nProcess Request Order:\n";
+		int deadlockCount = 0;
+		bool deadlock = false;
+		string deadProcesses = "";
+		answer += "Test Case #" + to_string(i+1) + ":\n---------------\nProcess Request Order:\n";
 		
 		//*INPUT*//
 		//Get inputs for the number of processes and number of resources types
@@ -103,8 +104,8 @@ int main(){
 			currentProcesses.pop_front(); //Delete the top
 			resourcesNeeded.push_back(resourcesNeeded.front()); //Push to the bottom
 			resourcesNeeded.pop_front(); //Delete the top
-			goalProcesses.push_back(goalProcesses.front());
-			goalProcesses.pop_front();
+			goalProcesses.push_back(goalProcesses.front()); //Push to the bottom
+			goalProcesses.pop_front(); //Delete the top
 		}
 		
 		//*CHECK PROCESSES*//
@@ -150,6 +151,8 @@ int main(){
 			//If that result meet the processes' requirements 
 			if(count == numResourceTypes){
 				cout << "(o)\n\n" << endl;
+				deadlockCount = 0; //Reset the count
+				deadProcesses = ""; //Reset 
 				
 				//Get those resources and run
 				transform(currentProcesses.front().begin(), currentProcesses.front().end()-1, availableResources.begin(), currentProcesses.front().begin(), plus<int>()); 
@@ -158,7 +161,7 @@ int main(){
 				//Give the resources back and terminate
 				transform(currentProcesses.front().begin(), currentProcesses.front().end()-1, availableResources.begin(), availableResources.begin(), plus<int>()); //more resources than before
 				
-				//Give the index 
+				//Get the index 
 				answer += "#" + to_string(currentProcesses.front().at(numResourceTypes)) + " ";
 				
 				//Remove it from the top
@@ -168,6 +171,8 @@ int main(){
 			}
 			else{
 				cout << "(x)\n\n" << endl;
+				deadlockCount++; //Increment the count
+				deadProcesses += "#" + to_string(currentProcesses.front().at(numResourceTypes)) + " "; //Get the index
 				
 				//Check the next process
 				currentProcesses.push_back(currentProcesses.front()); //Push to the bottom
@@ -177,7 +182,22 @@ int main(){
 				goalProcesses.push_back(goalProcesses.front()); //Push to the bottom
 				goalProcesses.pop_front(); //Delete the top
 			}
+			
+			//DEADLOCK - "A set of processes P1, P2, P3, ... , is in a DEADLOCK state if EVERY PROCESS in the set is WAITING for an event E1 that can be caused only by one of them, say P1."
+			if(deadlockCount>=currentProcesses.size()){
+				cout << "---DEADLOCK HAS OCCURERD---" << endl;
+				cout << "The following processes are in deadlock:" << deadProcesses << endl;
+				deadlock = true;
+				break;
+			}
 		}
+		
+		//If a deadlock has occurred...
+		if(deadlock == true){
+			//Fix it
+			cout << "hi" << endl;
+		}
+		
 		answer += "\n\n";
 	} 
 	cout << answer << endl;
