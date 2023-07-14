@@ -1,18 +1,50 @@
-# Deadlock-Handler
-A project for a Systems Programming class
+# Deadlock Handler
 
-What is the program? 
+This program outputs the order in which processes have their requests for resources met. The program is also capable of detecting potential deadlocks between processes and will output the order the processes will run after recovering from a deadlock.
 
-This program outputs the order in which processes have their requests for the resources they still need fulfilled. It contains the algorithms to show whether a dedalock will occur and the order in which the processes will run after recovering from the deadlock.
+---
+# Building
 
-How do you run and use the program? 
+Compile `main.cpp` from the command line using:
+```
+g++ main.cpp -o main
+```
 
-Some devices may require you to compile the cpp file with c++11 (g++ -std=c++11 CS162A_Project2_Fuentes_Robles_code.cpp -o CS162A_Project2_Fuentes_Robles_code)
-After compiling and running the exe, it takes in an int input which will be the number of cases to be inputted. 
-Each case will require you to first input 2 ints, which will be the number of processes (P) follow by the number of resource types (R).
-The next line contains R numbers which represent how many of each resource is still available.
-The next P lines contain the resources currently held by each process.
-The next P lines contain the number of resources that each process still needs.
+Some devices may require you to compile using a different C++ version. You can specify which version to use using the `std` flag. For example, to compile `main.cpp` using C++11, you would use the command below:
+```
+g++ -std=c++11 main.cpp -o main
+```
+
+---
+# Running the Program
+To run the program, type the name of the program using the command:
+```
+main
+```
+
+## Using Input/Output Files
+If you want to use an input file to run the program, follow the command template below:
+```
+main < input_file
+```
+
+If you would like to use an input and output file to run the program, use the command template below:
+```
+main < input_file > output_file
+```
+
+# Input
+The program first takes an `int` value representing the number of cases to test.
+
+Each test case begins with two inputs:
+1. An `int` value `P` representing the number of processes to test
+2. An `int` value `R` representing the number of resource types
+
+The program will then request for multiple lines of input, which are explained below:
+1. The first line shall contain `R` numbers, which represent how many of each resource is still available
+2. The next `P` lines shall contain `R` numbers, which represent how many of each resource is currently held by each process
+3. The next `P` lines shall contain `R` numbers, which represent how many of each resource is still needed by each process
+
 It will continue to take inputs until enough test cases are provided.
 
 After receving all the inputs, program will output the order in which the processes will have their requests fulfilled.
